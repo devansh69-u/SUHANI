@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A Special Celebration</title>
+
+<!-- Luxury Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Montserrat:wght@300;400&display=swap" rel="stylesheet">
+
+<!-- Animation & Effects -->
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.2/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+<style>
+/* ===== GLOBAL ===== */
+*{box-sizing:border-box}
+body{
+margin:0;
+font-family:'Montserrat',sans-serif;
+background:linear-gradient(140deg,#ffd6e7,#ffc2dc,#ffeaf3);
+overflow:hidden;
+color:#4a0033;
+}
+
+/* ===== STREAMER WRAPPER ===== */
+
+.streamer-wrapper{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+display:flex;
+justify-content:center;
+z-index:5;
+pointer-events:none;
+}
+
+/* ===== STREAMER FABRIC ===== */
+
+.streamer{
+position:relative;
+padding:20px 55px;
+margin-top:10px;
+
+background:linear-gradient(60deg,#ff4da6,#ff85c1,#ffc6e8);
+border-radius:0 0 50px 50px;
+
+box-shadow:0 12px 35px rgba(255,105,180,0.4);
+
+overflow:hidden;
+
+animation:fabricWave 5s ease-in-out infinite;
+transform-origin:top center;
+}
+
+/* Fabric ripple illusion */
+
+.streamer::before{
+content:"";
+position:absolute;
+inset:0;
+
+background:linear-gradient(
+120deg,
+transparent 0%,
+rgba(255,255,255,0.35) 40%,
+transparent 80%
+);
+
+opacity:0.6;
+animation:fabricShine 6s linear infinite;
+}
+
+/* Ribbon tails */
+
+.streamer::after{
+content:"";
+position:absolute;
+width:100%;
+height:100%;
+background:radial-gradient(circle at 20% 100%,rgba(255,255,255,0.2),transparent 60%);
+mix-blend-mode:overlay;
+}
+
+/* ===== TEXT ===== */
+
+.streamer-text{
+font-family:'Playfair Display',serif;
+font-size:40px;
+letter-spacing:6px;
+color:white;
+position:relative;
+z-index:2;
+}
+
+/* Fabric swing */
+
+@keyframes fabricWave{
+0%{transform:rotate(0deg)}
+25%{transform:rotate(1.4deg)}
+50%{transform:rotate(0deg)}
+75%{transform:rotate(-1.4deg)}
+100%{transform:rotate(0deg)}
+}
+
+/* Fabric shimmer */
+
+@keyframes fabricShine{
+0%{transform:translateX(-120%)}
+100%{transform:translateX(120%)}
+}
+
+/* Glitter canvas */
+
+.glitter{
+position:absolute;
+top:0;
+left:0;
+width:100%;
+height:100%;
+pointer-events:none;
+}
+
+
+/* ===== 3D STARFIELD ===== */
+canvas#stars{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+z-index:-2;
+}
+
+
+
+/* ===== INTRO ===== */
+#intro{
+position:fixed;
+inset:0;
+background:radial-gradient(circle,#1a001f,#000);
+display:flex;
+align-items:center;
+justify-content:center;
+z-index:9999;
+}
+
+.intro-content{
+text-align:center;
+color:white;
+}
+
+.intro-line{
+font-size:14px;
+letter-spacing:4px;
+opacity:0.7;
+}
+
+.intro-name{
+font-family:'Playfair Display',serif;
+font-size:52px;
+margin-top:15px;
+opacity:0;
+transform:scale(1.2);
+}
+
+.loader{
+width:240px;
+height:4px;
+background:rgba(255,255,255,0.2);
+border-radius:10px;
+margin:30px auto;
+overflow:hidden;
+}
+.loader-bar{
+height:100%;
+width:0%;
+background:linear-gradient(90deg,#ff66c4,#ff99dd);
+}
+
+/* ===== MAIN CONTENT ===== */
+.container{
+height:100vh;
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+text-align:center;
+padding:20px;
+}
+
+.photo{
+width:220px;
+height:220px;
+border-radius:50%;
+object-fit:cover;
+box-shadow:0 0 50px rgba(255,105,180,0.5);
+transform:scale(0.9);
+opacity:0;
+}
+
+h1{
+font-family:'Playfair Display',serif;
+font-size:40px;
+margin:20px 0 10px;
+opacity:0;
+}
+
+.card{
+background:rgba(255,255,255,0.45);
+backdrop-filter:blur(18px);
+border-radius:26px;
+padding:10px;
+max-width:420px;
+box-shadow:0 15px 50px rgba(255,105,180,0.25);
+opacity:0;
+transform:translateY(60px) scale(0.95);
+}
+
+textarea{
+width:100%;
+height:100px;
+border:none;
+border-radius:15px;
+padding:12px;
+margin-top:2px;
+resize:none;
+;
+}
+
+button{
+margin-top:16px;
+padding:14px 32px;
+border:none;
+border-radius:40px;
+background:linear-gradient(45deg,#ff4da6,#ff85c1);
+color:white;
+font-size:15px;
+cursor:pointer;
+transition:0.4s;
+}
+button:hover{
+transform:scale(1.07);
+box-shadow:0 0 25px rgba(255,105,180,0.6);
+}
+
+/* ===== MOBILE ===== */
+@media(max-width:600px){
+.photo{width:170px;height:170px;}
+h1{font-size:28px;}
+}
+
+#fireworks{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+pointer-events:none;
+z-index:-1;
+}
+
+
+
+/* ===== HEARTS ===== */
+.heart{
+position:fixed;
+color:#ff4da6;
+font-size:18px;
+pointer-events:none;
+opacity:0.9;
+transition:1.2s;
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="stars"></canvas>
+<canvas id="fireworks"></canvas>
+
+<!-- INTRO -->
+<div id="intro">
+  <div class="intro-content">
+    <div class="intro-line">A SPECIAL DAY BEGINS</div>
+    <div class="intro-name">SUHANI</div>
+    <div class="loader"><div class="loader-bar"></div></div>
+  </div>
+</div>
+
+<!-- MUSIC -->
+<audio id="music" loop>
+<source src="https://pagalnew.com/128-downloads/2087">
+</audio>
+
+<!-- MAIN -->
+<div class="container">
+  <img class="photo" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRHvgVO82N_2dMydBTGjS1sHDyzEIgrxhbA9g&s"
+   div>
+<div class="card">
+    <p>Happy Birthday to the best part of my life. You are not just my best friend, you are my happiness and my biggest blessing. Since the day you came into my life, everything feels brighter and more meaningful. You make me smile even on my worst days.
+
+
+Thankyou so much for  understanding me even when the relation between us was not good and once again HAPPY BIRTHDAY SONAAA💓✨🧿</p>
+    <textarea id="wishText" placeholder="Write your wish here..."></textarea>
+    <button onclick="saveWish()">Send  </button>
+  </div>
+</div>
+<div class="streamer-wrapper">
+  <div class="streamer">
+    <span class="streamer-text">HAPPY BIRTHDAY</span>
+    <canvas class="glitter"></canvas>
+  </div>
+</div>
+
+
+<script>
+/* ===== STARFIELD ===== */
+const canvas=document.getElementById("stars");
+const ctx=canvas.getContext("2d");
+let w,h,stars=[];
+function resize(){
+w=canvas.width=window.innerWidth;
+h=canvas.height=window.innerHeight;
+}
+window.addEventListener("resize",resize);
+resize();
+for(let i=0;i<200;i++){
+stars.push({x:Math.random()*w,y:Math.random()*h,z:Math.random()*w});
+}
+function drawStars(){
+ctx.fillStyle="rgba(0,0,0,0.2)";
+ctx.fillRect(0,0,w,h);
+ctx.fillStyle="white";
+stars.forEach(s=>{
+s.z-=0.6;
+if(s.z<=0){s.z=w}
+let k=128/s.z;
+let px=s.x*k+w/2;
+let py=s.y*k+h/2;
+if(px>=0&&px<=w&&py>=0&&py<=h){
+ctx.fillRect(px,py,1.5,1.5);
+}
+});
+requestAnimationFrame(drawStars);
+}
+drawStars();
+
+/* ===== INTRO TIMELINE ===== */
+let tl=gsap.timeline();
+tl.to(".intro-name",{opacity:1,scale:1,duration:1.8,ease:"power3.out"})
+  .to(".loader-bar",{width:"100%",duration:3,ease:"power2.inOut"})
+  .to("#intro",{opacity:0,duration:1.4,delay:0.4,onComplete:()=>{
+    document.getElementById("intro").style.display="none";
+    document.getElementById("music").play();
+revealMain();
+
+/* Normal Fireworks */
+for(let i=0;i<5;i++){
+setTimeout(()=>fireworks.push(new Firework()),i*400);
+}
+
+/* NAME FIREWORK */
+setTimeout(()=>{
+nameFirework("BABY");
+},2200);
+
+
+/* Birthday Firework Burst */
+for(let i=0;i<6;i++){
+setTimeout(()=>fireworks.push(new Firework()),i*400);
+}
+
+  }});
+
+/* ===== MAIN REVEAL ===== */
+function revealMain(){
+gsap.to(".photo",{opacity:1,scale:1,duration:1.4,ease:"power3.out"});
+gsap.to("h1",{opacity:1,y:0,duration:1.4,delay:0.3});
+gsap.to(".card",{opacity:1,y:0,scale:1,duration:1.6,delay:0.6,ease:"power3.out"});
+}
+
+/* ===== GLITTER EDGE EFFECT ===== */
+
+const glitterCanvas = document.querySelector(".glitter");
+const gctx = glitterCanvas.getContext("2d");
+
+function resizeGlitter(){
+glitterCanvas.width = glitterCanvas.offsetWidth;
+glitterCanvas.height = glitterCanvas.offsetHeight;
+}
+resizeGlitter();
+window.addEventListener("resize",resizeGlitter);
+
+let glitters = [];
+
+class GlitterParticle{
+constructor(){
+this.x = Math.random()*glitterCanvas.width;
+this.y = Math.random()*glitterCanvas.height;
+this.size = Math.random()*2+1;
+this.life = 60 + Math.random()*40;
+this.speedY = Math.random()*0.3;
+}
+
+update(){
+this.y += this.speedY;
+this.life--;
+}
+
+draw(){
+gctx.globalAlpha = this.life/100;
+gctx.fillStyle = "white";
+
+gctx.beginPath();
+gctx.arc(this.x,this.y,this.size,0,Math.PI*2);
+gctx.fill();
+gctx.globalAlpha = 1;
+}
+}
+
+function glitterLoop(){
+
+gctx.clearRect(0,0,glitterCanvas.width,glitterCanvas.height);
+
+if(Math.random()<0.4){
+glitters.push(new GlitterParticle());
+}
+
+glitters = glitters.filter(p=>{
+p.update();
+p.draw();
+return p.life>0;
+});
+
+requestAnimationFrame(glitterLoop);
+}
+
+glitterLoop();
+
+/* ===== FIREWORK ENGINE ===== */
+
+const fwCanvas = document.getElementById("fireworks");
+const fwCtx = fwCanvas.getContext("2d");
+
+fwCanvas.width = window.innerWidth;
+fwCanvas.height = window.innerHeight;
+
+let fireworks = [];
+let particles = [];
+
+window.addEventListener("resize", () => {
+fwCanvas.width = window.innerWidth;
+fwCanvas.height = window.innerHeight;
+});
+
+class Firework{
+constructor(){
+this.x = Math.random()*fwCanvas.width;
+this.y = fwCanvas.height;
+this.targetY = Math.random()*fwCanvas.height/2 + 80;
+this.speed = 4 + Math.random()*2;
+this.color = `hsl(${Math.random()*360},100%,70%)`;
+}
+
+update(){
+this.y -= this.speed;
+if(this.y <= this.targetY){
+for(let i=0;i<60;i++){
+particles.push(new Particle(this.x,this.y,this.color));
+}
+return true;
+}
+return false;
+}
+
+draw(){
+fwCtx.beginPath();
+fwCtx.arc(this.x,this.y,3,0,Math.PI*2);
+fwCtx.fillStyle=this.color;
+fwCtx.fill();
+}
+}
+
+class Particle{
+constructor(x,y,color){
+this.x=x;
+this.y=y;
+this.color=color;
+this.angle=Math.random()*Math.PI*2;
+this.speed=Math.random()*5+2;
+this.life=100;
+}
+
+
+
+update(){
+this.x += Math.cos(this.angle)*this.speed;
+this.y += Math.sin(this.angle)*this.speed + 0.4;
+this.speed *= 0.96;
+this.life--;
+}
+
+draw(){
+fwCtx.globalAlpha=this.life/100;
+fwCtx.beginPath();
+fwCtx.arc(this.x,this.y,2,0,Math.PI*2);
+fwCtx.fillStyle=this.color;
+fwCtx.fill();
+fwCtx.globalAlpha=1;
+}
+}
+
+class NameParticle{
+constructor(targetX,targetY){
+
+this.x = Math.random()*fwCanvas.width;
+this.y = fwCanvas.height;
+this.tx = targetX;
+this.ty = targetY;
+this.life = 140;
+
+}
+
+update(){
+
+this.x += (this.tx - this.x)*0.35;
+this.y += (this.ty - this.y)*0.35;
+this.life--;
+
+}
+
+draw(){
+
+fwCtx.globalAlpha = this.life/140;
+fwCtx.fillStyle = "#ffd6f0";
+
+fwCtx.beginPath();
+fwCtx.arc(this.x,this.y,2.3,0,Math.PI*2);
+fwCtx.fill();
+
+fwCtx.globalAlpha = 1;
+
+}
+}
+
+
+function fireworkLoop(){
+
+fwCtx.fillStyle="rgba(0,0,0,0.15)";
+fwCtx.fillRect(0,0,fwCanvas.width,fwCanvas.height);
+
+if(Math.random()<0.04){
+fireworks.push(new Firework());
+}
+
+fireworks = fireworks.filter(f=>{
+f.draw();
+return !f.update();
+});
+
+particles = particles.filter(p=>{
+p.draw();
+p.update();
+return p.life>0;
+});
+
+requestAnimationFrame(fireworkLoop);
+}
+
+fireworkLoop(); 
+
+/* ===== NAME FIREWORK EFFECT ===== */
+
+function nameFirework(text){
+
+const tempCanvas = document.createElement("canvas");
+const tctx = tempCanvas.getContext("2d");
+
+tempCanvas.width = 600;
+tempCanvas.height = 200;
+
+tctx.fillStyle = "white";
+tctx.font = "bold 90px Playfair Display";
+tctx.textAlign = "center";
+tctx.fillText(text,300,120);
+
+let imgData = tctx.getImageData(0,0,600,200).data;
+
+for(let y=0;y<200;y+=6){
+for(let x=0;x<600;x+=6){
+
+let index = (y*600 + x)*4;
+
+if(imgData[index+3] > 150){
+
+particles.push(new NameParticle(
+fwCanvas.width/2 - 300 + x,
+fwCanvas.height/2.75 + y
+
+
+));
+
+}
+
+}
+}
+
+}
+
+
+/* ===== SAVE WISH ===== */
+function saveWish(){
+let wish=document.getElementById("wishText").value;
+if(!wish.trim()) return alert("Write a wish first ");
+
+confetti({particleCount:160,spread:90,origin:{y:0.6}});
+
+fetch("https://docs.google.com/forms/d/e/1FAIpQLScApQwrfUVowCRb7F0lIeAjs9lCPg7Hg1YUj3_eCUS6reCmVQ/formResponse",{
+method:"POST",
+mode:"no-cors",
+headers:{"Content-Type":"application/x-www-form-urlencoded"},
+body:"entry.1076041870="+encodeURIComponent(wish)
+});
+
+
+}
+
+/* ===== HEARTS ===== */
+document.addEventListener("click",e=>{
+for(let i=0;i<8;i++){
+let hrt=document.createElement("div");
+hrt.className="heart";
+hrt.innerHTML="❤❤";
+hrt.style.left=e.clientX+"px";
+hrt.style.top=e.clientY+"px";
+document.body.appendChild(hrt);
+setTimeout(()=>{
+hrt.style.top=(e.clientY-120)+"px";
+hrt.style.left=(e.clientX+(Math.random()*60-30))+"px";
+hrt.style.opacity="0";
+},10);
+setTimeout(()=>hrt.remove(),1200);
+}
+});
+</script>
+
+</body>
+</html>
